@@ -1,0 +1,905 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ------------------------------------------------------------------ */
+/*  Maison Sumac — design tokens                                       */
+/*  cream #F6EFE3 · deep olive #3B4A32 · terracotta #C4572F            */
+/*  (polish pass: menu-fade, map-ping, micro-lift live at the bottom)  */
+/* ------------------------------------------------------------------ */
+
+@theme {
+  /* Brand palette (static values → safe in plain @theme) */
+  --color-cream: #f6efe3;
+  --color-cream-deep: #efe6d4;
+  --color-cream-dark: #e7dcc6;
+  --color-olive: #3b4a32;
+  --color-olive-soft: #4e6142;
+  --color-olive-mist: #75816a;
+  --color-terracotta: #c4572f;
+  --color-terracotta-dark: #a3441f;
+  --color-terracotta-mist: #e8c9b8;
+
+  /* Editorial radius scale (soft, 12–16px feel) */
+  --radius-card: 1rem;
+
+  /* Menu tab panels: quiet fade on category switch (250ms, opacity only) */
+  --animate-menu-fade: menu-fade 0.25s ease-out both;
+}
+
+/* Font + radius tokens reference runtime variables, so they must be
+   declared `inline` — this lets the `.lang-ar` override below swap the
+   whole type system to Cairo without touching any component. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-display: var(--ms-font-display);
+  --font-body: var(--ms-font-body);
+}
+
+:root {
+  --radius: 0.75rem; /* 12px base — cards read as 12–16px */
+
+  /* Maison Sumac palette mapped onto shadcn tokens */
+  --background: #f6efe3;
+  --foreground: #3b4a32;
+  --card: #fbf7ee;
+  --card-foreground: #3b4a32;
+  --popover: #fbf7ee;
+  --popover-foreground: #3b4a32;
+  --primary: #c4572f; /* terracotta = single accent */
+  --primary-foreground: #fdf9f1;
+  --secondary: #e9dfca;
+  --secondary-foreground: #3b4a32;
+  --muted: #eee4d0;
+  --muted-foreground: #6d7461;
+  --accent: #e9dfca;
+  --accent-foreground: #3b4a32;
+  --destructive: #a3441f;
+  --border: #ddd2ba;
+  --input: #ddd2ba;
+  --ring: #c4572f;
+  --chart-1: #c4572f;
+  --chart-2: #3b4a32;
+  --chart-3: #75816a;
+  --chart-4: #e7dcc6;
+  --chart-5: #a3441f;
+  --sidebar: #f6efe3;
+  --sidebar-foreground: #3b4a32;
+  --sidebar-primary: #c4572f;
+  --sidebar-primary-foreground: #fdf9f1;
+  --sidebar-accent: #e9dfca;
+  --sidebar-accent-foreground: #3b4a32;
+  --sidebar-border: #ddd2ba;
+  --sidebar-ring: #c4572f;
+
+  /* Default (English / LTR) type stack */
+  --ms-font-display: var(--font-fraunces), "Georgia", serif;
+  --ms-font-body: var(--font-dm-sans), "Segoe UI", sans-serif;
+}
+
+/* Arabic mode: swap the entire type system to Cairo and nudge the
+   display weight down — Cairo reads heavier than Fraunces at the
+   same weight, so this keeps headings airy in RTL. */
+.lang-ar {
+  --ms-font-display: var(--font-cairo), sans-serif;
+  --ms-font-body: var(--font-cairo), sans-serif;
+}
+
+/* Arabic headings: kill the Latin negative tracking (letter-spacing
+   breaks Arabic glyph joining) and give Cairo a taller line box for
+   its ascenders/descenders. */
+.lang-ar h1,
+.lang-ar h2,
+.lang-ar h3,
+.lang-ar h4,
+.lang-ar h5,
+.lang-ar h6 {
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--ms-font-body);
+    /* Subtle paper-like warmth instead of flat #fff */
+    background-image: radial-gradient(
+      ellipse 120% 80% at 50% -20%,
+      #fbf6ea 0%,
+      transparent 60%
+    );
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--ms-font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  ::selection {
+    background: #c4572f;
+    color: #fdf9f1;
+  }
+  /* Gentle focus ring everywhere, terracotta tinted */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Scroll-reveal (fade-up). Applied by <Reveal/>.                     */
+/*  Motion is fully disabled for users who prefer reduced motion.      */
+/* ------------------------------------------------------------------ */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hover-lift:hover {
+    transform: none;
+  }
+  /* tw-animate / shadcn dialog + tray entrance animations */
+  .animate-in {
+    animation: none !important;
+  }
+}
+
+/* Gentle image hover — used across gallery + hero */
+.img-zoom img {
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.img-zoom:hover img {
+  transform: scale(1.04);
+}
+@media (prefers-reduced-motion: reduce) {
+  .img-zoom img {
+    transition: none;
+  }
+  .img-zoom:hover img {
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Paper grain — a single inline SVG noise layer, barely visible.     */
+/*  pointer-events:none keeps it purely decorative.                    */
+/* ------------------------------------------------------------------ */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------------------ */
+/*  Slim, brand-tinted scrollbar (WebKit + Firefox)                    */
+/* ------------------------------------------------------------------ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #f6efe3;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbc0a6;
+  border-radius: 8px;
+  border: 2px solid #f6efe3;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b5a98d;
+}
+@supports (scrollbar-color: auto) {
+  * {
+    scrollbar-color: #cbc0a6 #f6efe3;
+    scrollbar-width: thin;
+  }
+}
+
+/* Dotted leader between dish name and price — classic bistro menu */
+.dot-leader {
+  flex: 1 1 auto;
+  border-bottom: 2px dotted #cbc0a6;
+  margin-inline: 0.6rem;
+  transform: translateY(-4px);
+  min-width: 1.5rem;
+}
+
+/* Soft lift for interactive cards */
+.hover-lift {
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px -18px rgb(59 74 50 / 0.35);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hover-lift,
+  .hover-lift:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Floating WhatsApp: gentle attention pulse (skipped on reduced motion) */
+@keyframes wa-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(196 87 47 / 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgb(196 87 47 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(196 87 47 / 0);
+  }
+}
+.wa-float {
+  animation: wa-pulse 2.8s ease-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wa-float {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Menu tab panels — fade-only enter (see --animate-menu-fade).       */
+/* ------------------------------------------------------------------ */
+@keyframes menu-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-menu-fade {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Map pin pulse — terracotta ring radiating from the placeholder-map  */
+/*  pin (companion to its static ring shadow). Skipped on reduced       */
+/*  motion; the base opacity-0 keeps it invisible when static.          */
+/* ------------------------------------------------------------------ */
+@keyframes map-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  75%,
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+.map-ping {
+  animation: map-ping 2.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-ping {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sumac showcase — the giant سماق wordmark. Drawn stroke-first       */
+/*  (per-glyph dash animation), then the terracotta fill fades in.     */
+/*  Animation is paused until the section's <Reveal/> adds .is-visible */
+/*  so the draw plays in view. Reduced motion → static inked word.     */
+/* ------------------------------------------------------------------ */
+.sumac-word {
+  font-family: var(--font-cairo), "Noto Naskh Arabic", sans-serif;
+  font-size: 168px;
+  font-weight: 700;
+  fill: #c4572f;
+  fill-opacity: 0;
+  stroke: #c4572f;
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+.reveal .sumac-word {
+  animation:
+    sumac-draw 2.4s ease-out forwards,
+    sumac-fill 0.9s ease-out 2s forwards;
+  animation-play-state: paused;
+}
+.reveal.is-visible .sumac-word {
+  animation-play-state: running;
+}
+@keyframes sumac-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes sumac-fill {
+  to {
+    fill-opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sumac-word,
+  .reveal .sumac-word {
+    animation: none;
+    stroke: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Unified pill-button micro-motion. One class so every CTA lifts,    */
+/*  settles on press and transitions colours identically — and so      */
+/*  reduced motion can switch the whole behaviour off in one place.    */
+/* ------------------------------------------------------------------ */
+.micro-lift {
+  transition:
+    transform 0.3s ease,
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.micro-lift:hover {
+  transform: translateY(-2px);
+}
+.micro-lift:active {
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .micro-lift,
+  .micro-lift:hover,
+  .micro-lift:active {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Search-match highlight (menu). Terracotta wash over cream — reads  */
+/*  as a hand highlighter, never a browser-default yellow.             */
+/* ------------------------------------------------------------------ */
+.hl-mark {
+  background-color: color-mix(in srgb, var(--color-terracotta) 16%, transparent);
+  color: var(--color-terracotta-dark);
+  border-radius: 0.2em;
+  padding: 0 0.08em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Menu board stitched edge — a dashed inner hairline that reads as   */
+/*  the thread of a canvas menu board. Purely decorative (the list is  */
+/*  padded, so the frame never crosses a dish row).                    */
+/* ------------------------------------------------------------------ */
+.stitched {
+  position: relative;
+}
+.stitched::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1.5px dashed rgb(59 74 50 / 0.14);
+  border-radius: calc(1rem - 2px);
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Receipt tear — a scalloped ticket edge hanging under the order     */
+/*  tray panel (mask-cut semicircles, so the shape is pixel-crisp at   */
+/*  any width). Sits on an outer wrapper because the panel itself      */
+/*  scrolls (overflow would clip the pseudo-element).                  */
+/* ------------------------------------------------------------------ */
+.receipt-tear {
+  position: relative;
+}
+.receipt-tear::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  inset-inline: 0;
+  height: 8px;
+  background-color: var(--card);
+  -webkit-mask-image: radial-gradient(circle at 7px 8px, transparent 4.5px, #000 5px);
+  -webkit-mask-size: 14px 8px;
+  -webkit-mask-repeat: repeat-x;
+  mask-image: radial-gradient(circle at 7px 8px, transparent 4.5px, #000 5px);
+  mask-size: 14px 8px;
+  mask-repeat: repeat-x;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Ticket edge — the scalloped stub where the dish-dialog photo meets */
+/*  the card body, echoing the tray's receipt tear. Cream semicircle   */
+/*  bumps rise into the photo; mask-cut so it stays crisp at any size. */
+/*  Purely decorative — sits on the (position:relative) photo wrapper. */
+/* ------------------------------------------------------------------ */
+.ticket-edge::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 8px;
+  background-color: var(--card);
+  -webkit-mask-image: radial-gradient(circle at 7px 0px, #000 4.5px, transparent 5px);
+  -webkit-mask-size: 14px 8px;
+  -webkit-mask-repeat: repeat-x;
+  mask-image: radial-gradient(circle at 7px 0px, #000 4.5px, transparent 5px);
+  mask-size: 14px 8px;
+  mask-repeat: repeat-x;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Dish-link — the animated hover underline on menu dish names.       */
+/*  Grows from the reading edge (left in LTR, right in Arabic) like a  */
+/*  pen stroke; replaces the browser underline so the offset matches   */
+/*  the dot leaders. Focus keeps the terracotta ring from Tailwind.    */
+/* ------------------------------------------------------------------ */
+.dish-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1.5px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.25s ease;
+  padding-bottom: 2px;
+}
+.dish-link:hover,
+.dish-link:focus-visible {
+  background-size: 100% 1.5px;
+}
+.lang-ar .dish-link {
+  background-position: 100% 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dish-link {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Print — the menu becomes a clean bilingual takeaway sheet: brand   */
+/*  header, all four categories expanded (Radix hides inactive panels  */
+/*  with [hidden]), no interactive chrome, palette kept on paper.      */
+/* ------------------------------------------------------------------ */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  body {
+    background: #fbf7ee !important;
+    background-image: none !important;
+  }
+  .grain::after {
+    display: none !important;
+  }
+  /* Reveal-on-scroll must never hide printed content */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .animate-in {
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  "Popular now" pulsing dot — inherits currentColor (cream on the    */
+/*  terracotta pill). Reduced motion: a static dot, no ping.           */
+/* ------------------------------------------------------------------ */
+.popular-dot {
+  position: relative;
+  display: inline-block;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background-color: currentColor;
+}
+.popular-dot::after {
+  content: "";
+  position: absolute;
+  inset: -0.2rem;
+  border-radius: inherit;
+  background-color: currentColor;
+  animation: pop-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes pop-ping {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.55;
+  }
+  80%,
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .popular-dot::after {
+    animation: none;
+    opacity: 0.25;
+    transform: scale(1.2);
+  }
+}
+
+/* r11 build bump */
+
+/* r12: ticket-edge + dish-link (bumped to force recompile) */
+
+/* ------------------------------------------------------------------ */
+/*  r13 — order-tray craft:                                            */
+/*  · MerciStamp ink (terracotta, multiply — stays readable over text) */
+/*  · total-pop: the total does a small ink-stamp bounce on change     */
+/* ------------------------------------------------------------------ */
+.merci-stamp {
+  color: var(--color-terracotta);
+  opacity: 0.42;
+  mix-blend-mode: multiply;
+}
+@keyframes total-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.18) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+.total-pop {
+  display: inline-block;
+  animation: total-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .total-pop {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  r13 — "House favorite" swing tag: a slight hang rotation (mirrored */
+/*  in Arabic) and a punched hole on the reading edge, like a price    */
+/*  tag on a market crate.                                             */
+/* ------------------------------------------------------------------ */
+.fav-tag {
+  position: relative;
+  transform: rotate(-1.5deg);
+}
+.fav-tag::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4.5px;
+  height: 4.5px;
+  border-radius: 9999px;
+  background-color: var(--card);
+  box-shadow: inset 0 0 0 1.5px rgb(196 87 47 / 0.4);
+}
+.lang-ar .fav-tag {
+  transform: rotate(1.5deg);
+}
+
+/* ------------------------------------------------------------------ */
+/*  r13 — gallery flash: when the dish dialog's "see it in the         */
+/*  gallery" jump lands, the tile's ring pulses twice in terracotta.   */
+/*  Reduced motion: one static ring while the class is present.        */
+/* ------------------------------------------------------------------ */
+@keyframes gallery-flash-pulse {
+  0% {
+    box-shadow:
+      0 0 0 0 rgb(196 87 47 / 0),
+      0 14px 30px -20px rgba(59, 74, 50, 0.4);
+  }
+  25% {
+    box-shadow:
+      0 0 0 5px rgb(196 87 47 / 0.55),
+      0 14px 30px -20px rgba(59, 74, 50, 0.4);
+  }
+  60% {
+    box-shadow:
+      0 0 0 3px rgb(196 87 47 / 0.25),
+      0 14px 30px -20px rgba(59, 74, 50, 0.4);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0 rgb(196 87 47 / 0),
+      0 14px 30px -20px rgba(59, 74, 50, 0.4);
+  }
+}
+.gallery-flash {
+  animation: gallery-flash-pulse 1.05s ease-out 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-flash {
+    animation: none;
+    box-shadow:
+      0 0 0 3px rgb(196 87 47 / 0.5),
+      0 14px 30px -20px rgba(59, 74, 50, 0.4);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  r13 — sumac-berry loader: the brand mark draws itself while a      */
+/*  dish photo streams in. Stem traces first, branches follow, the     */
+/*  three berries bloom one after another. Reduced motion: the static  */
+/*  mark (no draw, no bloom).                                          */
+/* ------------------------------------------------------------------ */
+.sumac-loader .sumac-loader-stem,
+.sumac-loader .sumac-loader-branch {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: loader-draw 0.9s ease-out forwards;
+}
+.sumac-loader .sumac-loader-branch {
+  animation-delay: 0.35s;
+  animation-duration: 0.7s;
+}
+.sumac-loader .sumac-loader-berry {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: loader-bloom 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.sumac-loader .b1 {
+  animation-delay: 0.75s;
+}
+.sumac-loader .b2 {
+  animation-delay: 0.95s;
+}
+.sumac-loader .b3 {
+  animation-delay: 1.15s;
+}
+@keyframes loader-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes loader-bloom {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sumac-loader .sumac-loader-stem,
+  .sumac-loader .sumac-loader-branch {
+    animation: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+  .sumac-loader .sumac-loader-berry {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  r14 — ticket signature fields: name + note on the order ticket.    */
+/*  A transparent input with a dashed pencil line — reads as writing   */
+/*  on the receipt, not as a form. Placeholder in the muted ink.       */
+/* ------------------------------------------------------------------ */
+.ticket-input {
+  width: 100%;
+  height: 2.25rem;
+  background-color: transparent;
+  border: 0;
+  border-bottom: 1.5px dashed rgb(59 74 50 / 0.3);
+  border-radius: 0;
+  padding: 0 0.125rem;
+  font-size: 0.875rem;
+  color: var(--color-olive);
+  transition: border-color 0.25s ease;
+}
+.ticket-input::placeholder {
+  color: rgb(59 74 50 / 0.38);
+  font-style: italic;
+}
+.ticket-input:hover {
+  border-bottom-color: rgb(59 74 50 / 0.5);
+}
+.ticket-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-terracotta);
+}
+
+/* ------------------------------------------------------------------ */
+/*  r14 — the MERCI stamp "stamps down" when the ticket opens: drops   */
+/*  from a raised, slightly-turned position and settles with a small   */
+/*  overshoot (the thump of a rubber stamp). Reduced motion: static.   */
+/* ------------------------------------------------------------------ */
+@keyframes stamp-down {
+  0% {
+    opacity: 0;
+    scale: 1.7;
+    rotate: -3deg;
+  }
+  55% {
+    opacity: 0.5;
+    scale: 0.94;
+    rotate: -15deg;
+  }
+  100% {
+    opacity: 0.42;
+    scale: 1;
+    rotate: -14deg;
+  }
+}
+.merci-stamp {
+  animation: stamp-down 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.lang-ar .merci-stamp {
+  animation-name: stamp-down-rtl;
+}
+@keyframes stamp-down-rtl {
+  0% {
+    opacity: 0;
+    scale: 1.7;
+    rotate: 3deg;
+  }
+  55% {
+    opacity: 0.5;
+    scale: 0.94;
+    rotate: 15deg;
+  }
+  100% {
+    opacity: 0.42;
+    scale: 1;
+    rotate: 14deg;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .merci-stamp {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/*  r15 — tray count pop, recent-chip pulse, print QR               */
+/*  · count-pop: the pill's count bubble stamps in on every change  */
+/*  · recent-chip-flash: a just-viewed chip pops + rings once       */
+/*  · qr-print: keep the takeaway sheet's squares solid ink         */
+/* ---------------------------------------------------------------- */
+
+@keyframes count-pop {
+  0% {
+    scale: 0.4;
+  }
+  55% {
+    scale: 1.28;
+  }
+  100% {
+    scale: 1;
+  }
+}
+.count-pop {
+  animation: count-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .count-pop {
+    animation: none;
+  }
+}
+
+@keyframes recent-chip-in {
+  0% {
+    opacity: 0;
+    scale: 0.6;
+  }
+  60% {
+    opacity: 1;
+    scale: 1.07;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+@keyframes recent-chip-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(196, 87, 47, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 9px rgba(196, 87, 47, 0);
+  }
+}
+.recent-chip-flash {
+  animation:
+    recent-chip-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    recent-chip-ring 0.9s ease-out 0.15s 1 both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .recent-chip-flash {
+    animation: none;
+  }
+}
+
+.qr-print {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
