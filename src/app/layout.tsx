@@ -34,6 +34,7 @@ const cairo = Cairo({
 /* ------------------------------------------------------------------ */
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://maison-sumac.vercel.app"),
   title: "Maison Sumac — Specialty Café & Brunch in Gemmayzeh, Beirut",
   description:
     "Slow mornings, fresh manakish, specialty coffee and a sunny terrace in the heart of Gemmayzeh, Beirut. ميزون سماق — قهوة مختصة وتراس شمسي بالجميزة. Reserve your table on WhatsApp.",
@@ -46,11 +47,14 @@ export const metadata: Metadata = {
     "كافي بيروت",
   ],
   authors: [{ name: "Maison Sumac" }],
+  alternates: {
+    canonical: "https://maison-sumac.vercel.app",
+  },
   openGraph: {
     title: "Maison Sumac — Specialty Café & Brunch in Beirut | ميزون سماق",
     description:
       "Slow mornings, fresh manakish and a sunny terrace in Gemmayzeh. Reserve your table on WhatsApp.",
-    url: "https://maisonsumac.example",
+    url: "https://maison-sumac.vercel.app",
     siteName: "Maison Sumac",
     type: "website",
     locale: "en_US",

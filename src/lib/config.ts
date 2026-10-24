@@ -3,8 +3,10 @@
 /* ------------------------------------------------------------------ */
 
 export const SITE_CONFIG = {
-  /** Fictional WhatsApp business number (international format, no +). */
-  whatsappNumber: "96171234567",
+  /** WhatsApp business number — THE single source for every WhatsApp
+      link on the site (header, hero, menu, booking, footer, contact,
+      floating button, print sheet). International format, no "+". */
+  whatsappNumber: "96179143702",
 
   /** Fictional street address, shown in the Location section + footer. */
   address: {
@@ -32,6 +34,16 @@ export const SITE_CONFIG = {
 /* ------------------------------------------------------------------ */
 
 const waBase = `https://wa.me/${SITE_CONFIG.whatsappNumber}?text=`;
+
+/** Human-readable number for the contact block / footer text:
+    "96179143702" → "+961 79 143 702" (always derived from the constant,
+    so editing whatsappNumber above updates the visible number too). */
+export function waDisplayNumber(): string {
+  const n = SITE_CONFIG.whatsappNumber;
+  const local = n.startsWith("961") ? n.slice(3) : n;
+  const groups = local.replace(/(\d{3})(?=\d)/g, "$1 ");
+  return `+961 ${groups}`;
+}
 
 export function waReserveUrl(lang: "en" | "ar"): string {
   const message =

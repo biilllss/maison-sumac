@@ -42,7 +42,7 @@ const jsonLd = {
   description:
     "Specialty café & brunch spot in Gemmayzeh, Beirut — wood-oven manakish, cardamom lattes and a sunny terrace.",
   image: IMAGES.ogFallback,
-  url: "https://maisonsumac.example",
+  url: "https://maison-sumac.vercel.app",
   telephone: `+${SITE_CONFIG.whatsappNumber}`,
   priceRange: "$",
   servesCuisine: ["Lebanese", "Café", "Brunch"],

@@ -36,6 +36,11 @@ export const translations = {
       ar: "AR",
     },
 
+    conceptBadge: {
+      en: "Concept project by Mawqe3 Studio",
+      ar: "مشروع تصوري من ستوديو موقع",
+    },
+
     sound: {
       label: "Terrace ambience",
       enable: "Play the terrace sounds",
@@ -49,7 +54,8 @@ export const translations = {
       sub: "Wood-oven manakish, specialty coffee and a sun-washed terrace in the heart of Gemmayzeh. Come hungry, leave slowly.",
       reserveCta: "Reserve on WhatsApp",
       menuCta: "See the menu",
-      openBadge: "Open daily from 7:30",
+      openBadge:
+        "Open daily from 7:30 on weekdays, 8:00 on weekends",
       phase: {
         day: "Sun-washed terrace right now",
         night: "Lantern-lit terrace right now",
@@ -215,7 +221,6 @@ export const translations = {
     reviews: {
       overline: "Reviews",
       title: "What the regulars say",
-      rating: "4.9 — loved by 180+ regulars",
       items: [
         {
           quote:
@@ -244,6 +249,8 @@ export const translations = {
       addressLabel: "Address",
       hoursLabel: "Opening hours",
       directionsCta: "Get directions",
+      whatsappLabel: "WhatsApp",
+      mapPreview: "Map preview",
       mapNote: "Two minutes from the Gemmayzeh stairs — look for the olive-green door.",
       mapAlt: "Map placeholder — Maison Sumac location in Gemmayzeh",
       mapStreets: ["GEMMAYZE ST.", "RUE GOURAUD", "RUE DU LIBAN"],
@@ -292,6 +299,8 @@ export const translations = {
       nameLabel: "Your name",
       namePlaceholder: "Layla",
       nameHint: "The same name signs your orders — we keep it on file.",
+      slotsGone:
+        "Today's times have all passed — showing the next day with free slots.",
     },
 
     cta: {
@@ -343,6 +352,11 @@ export const translations = {
       ar: "AR",
     },
 
+    conceptBadge: {
+      en: "Concept project by Mawqe3 Studio",
+      ar: "مشروع تصوري من ستوديو موقع",
+    },
+
     sound: {
       label: "أصوات التراس",
       enable: "شغّل أصوات التراس",
@@ -356,7 +370,7 @@ export const translations = {
       sub: "ماناقيش من فرن الحطب، قهوة مختصة، وتراس شمسي بقلب الجميزة. اجا جوعان، واضل على راحتك.",
       reserveCta: "احجز على واتساب",
       menuCta: "شوف المنيو",
-      openBadge: "منفتحين كل يوم من ٧:٣٠",
+      openBadge: "منفتحين كل يوم — ٧:٣٠ أيام الأسبوع، ٨:٠٠ بالويكند",
       phase: {
         day: "التراس بالشمس هلأ",
         night: "التراس بالفوانيس هلأ",
@@ -522,7 +536,6 @@ export const translations = {
     reviews: {
       overline: "آراء الزبائن",
       title: "شو عم يحكوا الزبائن الدائمين",
-      rating: "٤.٩ — محبوبين من أكتر من ١٨٠ زبون دائم",
       items: [
         {
           quote:
@@ -551,6 +564,8 @@ export const translations = {
       addressLabel: "العنوان",
       hoursLabel: "ساعات الشغل",
       directionsCta: "افتح الخريطة",
+      whatsappLabel: "واتساب",
+      mapPreview: "معاينة الخريطة",
       mapNote: "دقيقتين من درج الجميزة — دوّر عالباب الزيتي.",
       mapAlt: "موقع ميزون سماق بالجميزة على الخريطة",
       mapStreets: ["شارع الجميزة", "شارع غورو", "شارع دو ليبان"],
@@ -599,6 +614,8 @@ export const translations = {
       nameLabel: "اسمك",
       namePlaceholder: "ليلى",
       nameHint: "نفس اسم طلباتك — منحفظه عندنا.",
+      slotsGone:
+        "أوقات اليوم كلها مرّت — عمورّج على اليوم الجاي اللي فيو أوقات فاضية.",
     },
 
     cta: {

@@ -2,8 +2,8 @@
 
 import { ArrowUp, Facebook, Instagram, Mail } from "lucide-react";
 import { useLanguage } from "./language-provider";
-import { SITE_CONFIG } from "@/lib/config";
-import { BrandMark } from "./icons";
+import { SITE_CONFIG, waReserveUrl } from "@/lib/config";
+import { BrandMark, WhatsAppIcon } from "./icons";
 
 /* ------------------------------------------------------------------ */
 /*  Footer — socials, copyright, studio credit. Pinned to the bottom   */
@@ -11,12 +11,16 @@ import { BrandMark } from "./icons";
 /* ------------------------------------------------------------------ */
 
 export function SiteFooter() {
-  const { t, isArabic } = useLanguage();
+  const { t, lang, isArabic } = useLanguage();
   const year = new Date().getFullYear();
 
   const socials = [
-    { href: SITE_CONFIG.social.instagram, label: "Instagram", Icon: Instagram },
-    { href: SITE_CONFIG.social.facebook, label: "Facebook", Icon: Facebook },
+    // WhatsApp — the number lives in ONE place: SITE_CONFIG.whatsappNumber
+    { href: waReserveUrl(lang), label: "WhatsApp", Icon: WhatsAppIcon },
+    // Concept site — the real profiles don't exist yet, so the icons
+    // keep their place in the row but link nowhere ("#")
+    { href: "#", label: "Instagram", Icon: Instagram },
+    { href: "#", label: "Facebook", Icon: Facebook },
     { href: `mailto:${SITE_CONFIG.email}`, label: "Email", Icon: Mail },
   ];
 
@@ -42,8 +46,8 @@ export function SiteFooter() {
                 <li key={label}>
                   <a
                     href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    target={href === "#" ? undefined : "_blank"}
+                    rel={href === "#" ? undefined : "noopener noreferrer"}
                     aria-label={`${t.footer.followUs} — ${label}`}
                     className="micro-lift inline-flex h-11 w-11 items-center justify-center rounded-full border border-olive/20 text-olive hover:border-terracotta hover:bg-terracotta hover:text-cream"
                   >
@@ -91,7 +95,7 @@ export function SiteFooter() {
           <p>
             {t.footer.credit}{" "}
             <a
-              href="https://mawqe3.example"
+              href="https://instagram.com/mawqe3_studio"
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-terracotta underline-offset-2 hover:underline"

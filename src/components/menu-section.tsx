@@ -141,9 +141,11 @@ function MenuRow({
 
   return (
     <li className="group rounded-xl border-b border-border/60 px-3 py-4 transition-colors last:border-0 hover:bg-cream-deep/60 sm:py-5">
-      {/* name …… price + add row */}
-      <div className="flex items-baseline">
-        <h3 className="font-display text-lg text-olive sm:text-xl">
+      {/* name …… price + add row — flex-wrap lets the leader/price/button
+            drop to a second dotted line on very narrow screens (360px)
+            instead of forcing horizontal page scroll */}
+      <div className="flex flex-wrap items-baseline gap-y-0.5">
+        <h3 className="min-w-0 font-display text-lg text-olive sm:text-xl">
           <button
             type="button"
             onClick={() => openDish(item, siblings ? { siblings } : undefined)}
@@ -897,10 +899,7 @@ export function MenuSection() {
                 wa.me/{SITE_CONFIG.whatsappNumber}
               </p>
               <p className="mt-2">{SITE_CONFIG.address[lang]}</p>
-              <p className="mt-1">
-                Instagram @{SITE_CONFIG.social.instagram.split("/").pop()} ·{" "}
-                {SITE_CONFIG.email}
-              </p>
+              <p className="mt-1">{SITE_CONFIG.email}</p>
             </div>
           </div>
 

@@ -20,21 +20,6 @@ export function Reviews() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading overline={t.reviews.overline} title={t.reviews.title} />
 
-        {/* average-rating chip — social proof anchor under the title */}
-        <Reveal delay={80} className="mt-4 flex justify-center">
-          <p className="inline-flex items-center gap-2 rounded-full border border-terracotta/30 bg-card px-4 py-1.5 text-sm font-medium text-olive">
-            <span className="flex gap-0.5" aria-hidden="true">
-              {Array.from({ length: 5 }).map((_, s) => (
-                <Star
-                  key={s}
-                  className="h-3.5 w-3.5 fill-terracotta text-terracotta"
-                />
-              ))}
-            </span>
-            {t.reviews.rating}
-          </p>
-        </Reveal>
-
         <div className="mt-10 grid gap-5 md:grid-cols-3 md:gap-6">
           {t.reviews.items.map((review, i) => (
             <Reveal key={review.name} delay={i * 110} className="h-full">

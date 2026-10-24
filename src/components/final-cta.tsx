@@ -4,19 +4,30 @@ import { useEffect, useRef, useState } from "react";
 import { CalendarHeart, Minus, PenLine, Plus } from "lucide-react";
 import { useLanguage } from "./language-provider";
 import { waReserveUrl, waReserveDetailsUrl } from "@/lib/config";
-import { BOOKING_SLOTS, formatSlot, getBookingDays } from "@/lib/booking";
+import {
+  beirutMinutesNow,
+  formatSlot,
+  getBookingDays,
+  getBookingSlots,
+  slotToMinutes,
+} from "@/lib/booking";
 import { BrandMark, WhatsAppIcon } from "./icons";
 import { Reveal } from "./reveal";
 
 /* ------------------------------------------------------------------ */
 /*  Final CTA — deep-olive band with a compact booking widget:         */
-/*  day chips (Beirut clock) + time slots + party-size stepper + a     */
-/*  name that SHARES the order-tray signature (ms-order-name), all     */
-/*  feeding one structured WhatsApp reservation message.               */
+/*  day chips (real dates: today + next 3 days, Beirut clock) +        */
+/*  time slots generated from the REAL opening hours (Mon–Fri          */
+/*  7:30–18:00 · Sat–Sun 8:00–19:00, last seat 1h before close),       */
+/*  past times disabled for today, party-size stepper, and a name      */
+/*  that SHARES the order-tray signature (ms-order-name) — all         */
+/*  feeding one structured WhatsApp reservation message that carries   */
+/*  the day WITH its date.                                             */
 /* ------------------------------------------------------------------ */
 
 const MAX_GUESTS = 8;
 const NAME_KEY = "ms-order-name";
+const DEFAULT_SLOT = "11:00"; // brunch default — validated per day below
 
 export function FinalCta() {
   const { t, lang, isArabic } = useLanguage();
@@ -24,7 +35,7 @@ export function FinalCta() {
   // Day chips depend on the Beirut clock — computed after mount.
   const [days, setDays] = useState(() => getBookingDays(lang));
   const [dayIdx, setDayIdx] = useState(0);
-  const [slot, setSlot] = useState<string>(BOOKING_SLOTS[2]); // 11:00 brunch default
+  const [slot, setSlot] = useState<string>(DEFAULT_SLOT);
   const [guests, setGuests] = useState(2);
   // The reservation signs itself with the same name the order tray
   // uses — one signature across booking and ordering.
@@ -72,10 +83,32 @@ export function FinalCta() {
     );
   }, [name]);
 
-  const activeDay = days[Math.min(dayIdx, days.length - 1)];
+  /* ------- selection logic (fully derived — no effects needed) -------
+      - slots come from the picked day's real opening hours
+      - for TODAY, times at/past the Beirut clock are disabled
+      - if the picked day has nothing left (late-evening visit), the
+        selection falls forward to the next day with free slots          */
+  const nowMin = beirutMinutesNow();
+  const enabledSlots = (i: number) =>
+    i === 0
+      ? getBookingSlots(0).filter((s) => slotToMinutes(s) > nowMin)
+      : getBookingSlots(i);
+  const pickedDayEmpty = enabledSlots(dayIdx).length === 0;
+  const selIdx = pickedDayEmpty
+    ? Math.max(
+        0,
+        days.findIndex((_, i) => enabledSlots(i).length > 0)
+      )
+    : dayIdx;
+  const daySlots = getBookingSlots(selIdx);
+  const dayEnabled = enabledSlots(selIdx);
+  // Keep the visitor's slot if it still works on the effective day,
+  // otherwise default to the first free slot.
+  const effSlot = dayEnabled.includes(slot) ? slot : dayEnabled[0];
+  const activeDay = days[selIdx];
   const bookHref = waReserveDetailsUrl(lang, {
-    day: activeDay.label,
-    time: formatSlot(slot, lang),
+    day: activeDay.waLabel, // day WITH the real date, in the active language
+    time: formatSlot(effSlot, lang),
     guests,
     name,
   });
@@ -140,10 +173,11 @@ export function FinalCta() {
                     key={day.value}
                     type="button"
                     role="radio"
-                    aria-checked={dayIdx === i}
+                    aria-checked={selIdx === i}
+                    title={day.waLabel}
                     onClick={() => setDayIdx(i)}
                     className={`${chipBase} ${
-                      dayIdx === i
+                      selIdx === i
                         ? "bg-olive text-cream"
                         : "border border-olive/25 text-olive hover:border-olive"
                     }`}
@@ -152,6 +186,14 @@ export function FinalCta() {
                   </button>
                 ))}
               </div>
+              {pickedDayEmpty ? (
+                <p
+                  role="status"
+                  className="mt-2 text-xs font-medium italic text-terracotta-dark"
+                >
+                  {t.booking.slotsGone}
+                </p>
+              ) : null}
             </fieldset>
 
             {/* time slots */}
@@ -168,22 +210,31 @@ export function FinalCta() {
                 aria-label={t.booking.time}
                 className="mt-2 flex flex-wrap gap-2"
               >
-                {BOOKING_SLOTS.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    role="radio"
-                    aria-checked={slot === s}
-                    onClick={() => setSlot(s)}
-                    className={`${chipBase} ${
-                      slot === s
-                        ? "bg-olive text-cream"
-                        : "border border-olive/25 text-olive hover:border-olive"
-                    }`}
-                  >
-                    {formatSlot(s, lang)}
-                  </button>
-                ))}
+                {daySlots.map((s) => {
+                  const past = selIdx === 0 && !dayEnabled.includes(s);
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      role="radio"
+                      aria-checked={effSlot === s}
+                      aria-disabled={past || undefined}
+                      disabled={past}
+                      onClick={() => setSlot(s)}
+                      className={`${chipBase} ${
+                        effSlot === s
+                          ? "bg-olive text-cream"
+                          : "border border-olive/25 text-olive hover:border-olive"
+                      } ${
+                        past
+                          ? "cursor-not-allowed opacity-35 line-through decoration-terracotta/60 hover:border-olive/25"
+                          : ""
+                      }`}
+                    >
+                      {formatSlot(s, lang)}
+                    </button>
+                  );
+                })}
               </div>
             </fieldset>
 

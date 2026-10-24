@@ -96,6 +96,18 @@ export function SiteHeader() {
         scrolled ? "shadow-[0_8px_24px_-16px_rgba(59,74,50,0.35)]" : ""
       }`}
     >
+      {/* Concept badge — thin olive strip pinned above the header bar.
+          Both languages stay visible at once (language-independent). */}
+      <p className="flex flex-wrap items-baseline justify-center gap-x-2 bg-olive px-4 py-1.5 text-center text-[11px] font-medium leading-snug text-cream/90">
+        <span dir="ltr">{t.conceptBadge.en}</span>
+        <span aria-hidden="true" className="opacity-40">
+          ·
+        </span>
+        <span dir="rtl" lang="ar">
+          {t.conceptBadge.ar}
+        </span>
+      </p>
+
       {/* Skip link — first focusable element on the page */}
       <a
         href="#main"

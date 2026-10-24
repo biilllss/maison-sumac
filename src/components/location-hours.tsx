@@ -3,7 +3,8 @@
 import { Clock, MapPin, Navigation } from "lucide-react";
 import { useLanguage } from "./language-provider";
 import { OpenStatus } from "./open-status";
-import { SITE_CONFIG } from "@/lib/config";
+import { SITE_CONFIG, waDisplayNumber } from "@/lib/config";
+import { WhatsAppIcon } from "./icons";
 import { Reveal } from "./reveal";
 import { SectionHeading } from "./section-heading";
 
@@ -57,6 +58,20 @@ export function LocationHours() {
                   <Navigation className="h-4 w-4" aria-hidden="true" />
                   {t.visit.directionsCta}
                 </a>
+                {/* WhatsApp contact row — number text derived from the
+                    single SITE_CONFIG.whatsappNumber constant */}
+                <a
+                  href={`https://wa.me/${SITE_CONFIG.whatsappNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="micro-lift mt-2 inline-flex min-h-[48px] items-center gap-2 rounded-full border-2 border-olive/25 px-4 py-2 text-sm font-semibold text-olive hover:border-terracotta hover:bg-terracotta hover:text-cream"
+                >
+                  <WhatsAppIcon className="h-4 w-4" aria-hidden="true" />
+                  {t.visit.whatsappLabel}
+                  <span dir="ltr" className="font-display tracking-wide">
+                    {waDisplayNumber()}
+                  </span>
+                </a>
               </div>
             </Reveal>
 
@@ -99,6 +114,11 @@ export function LocationHours() {
               aria-label={t.visit.mapAlt}
               className="relative h-full min-h-[320px] overflow-hidden rounded-2xl border border-olive/20 bg-olive"
             >
+              {/* visible honesty label — this is a styled placeholder, not
+                  a live map ("Map preview" / «معاينة الخريطة») */}
+              <span className="absolute top-3 start-3 z-10 rounded-full bg-cream/95 px-3 py-1 text-xs font-semibold text-olive shadow-sm">
+                {t.visit.mapPreview}
+              </span>
               {/* CSS street grid */}
               <div
                 aria-hidden="true"
